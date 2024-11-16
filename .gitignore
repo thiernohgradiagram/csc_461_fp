@@ -162,4 +162,6 @@ cython_debug/
 #.idea/
 
 # ignore the data folder located in the csc_461_fp directory
-data/
+_01_data/
+_02_data_preprocessed/
+_02_data_preprocessed_parallel_proc/
