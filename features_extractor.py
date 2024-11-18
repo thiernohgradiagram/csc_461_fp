@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pandas as pd
 import librosa
 
 class FeaturesExtractor:
@@ -59,11 +60,23 @@ class FeaturesExtractor:
         """
         Process the dataset to extract features and save them to a CSV file.
         """
-        # Dictionary to hold extracted features and labels
-        data = {
-            "features": [],
-            "label": []
+
+        # create a dictionary for the genre labels
+        genre_dict = {
+            'blues': 0,
+            'classical': 1,
+            'country': 2,
+            'disco': 3,
+            'hiphop': 4,
+            'jazz': 5,
+            'metal': 6,
+            'pop': 7,
+            'reggae': 8,
+            'rock': 9
         }
+
+        # Dictionary to hold extracted features and labels
+        data = []
 
         genres = os.listdir(dataset_path)  # Assuming each genre is a folder
 
@@ -71,17 +84,29 @@ class FeaturesExtractor:
             genre_path = os.path.join(dataset_path, genre)
             if os.path.isdir(genre_path):
                 for file in os.listdir(genre_path):
-                    if file.endswith(".wav"):  # Process only .au files
+                    if file.endswith(".wav"):  # Process only .wav files
                         file_path = os.path.join(genre_path, file)
 
                         try:
                             y, sr = self.load_audio(file_path)
                             features = self.extract_features_from_file(y, sr)
-                            data["features"].append(features)
-                            data["label"].append(genre)
+                            genre_num = genre_dict[genre]
+                            data.append(np.hstack([features, genre_num]))
                         except Exception as e:
                             print(f"Error processing {file_path}: {e}")
 
-        # return the extracted features and labels
-        return data
+        # Assign meaningful feature names
+        column_names = [
+            "RMS", "ZCR", "Spectral_Centroid", "Spectral_Bandwidth", "Spectral_Rolloff",
+            "MFCC_1", "MFCC_2", "MFCC_3", "MFCC_4", "MFCC_5", "MFCC_6", "MFCC_7",
+            "MFCC_8", "MFCC_9", "MFCC_10", "MFCC_11", "MFCC_12", "MFCC_13",
+            "Chroma_1", "Chroma_2", "Chroma_3", "Chroma_4", "Chroma_5", "Chroma_6",
+            "Chroma_7", "Chroma_8", "Chroma_9", "Chroma_10", "Chroma_11", "Chroma_12",
+            "Genre"
+        ]
 
+        # Convert to a DataFrame
+        df = pd.DataFrame(data, columns=column_names)
+
+        # Return the DataFrame
+        return df
