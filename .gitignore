@@ -167,3 +167,4 @@ _02_data_preprocessed/
 _02_data_preprocessed_parallel_proc/
 _03_data_gtzan_features_labels.npz
 _03_data_gtzan_features_labels.xlsx
+_04_summary_statistics_gtzan_features_labels.xlsx
