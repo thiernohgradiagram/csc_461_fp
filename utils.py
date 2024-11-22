@@ -2,6 +2,7 @@
 
 import hashlib
 import os
+import matplotlib.pyplot as plt
 
 
 def get_directory_size(path):
@@ -68,3 +69,47 @@ def compare_directories(source_path, destination_path):
         return False
     
     return True
+
+
+def detect_outliers_iqr_and_plot(data, summary_stats, label_column):
+    """
+    Detects outliers for each feature using the IQR method and generates a boxplot.
+
+    Parameters:
+        data (pd.DataFrame): Dataset containing features for outlier detection.
+        summary_stats (pd.DataFrame): Summary statistics including '25%' and '75%' for each feature.
+        label_column (str): The name of the label column to exclude from analysis.
+    """
+    # Exclude the label column from analysis
+    feature_columns = [col for col in data.columns if col != label_column]
+    
+    for feature in feature_columns:
+        # Extract the feature data and summary statistics
+        feature_data = data[feature]
+        Q1 = summary_stats.loc['25%', feature]  # 25th percentile (Q1)
+        Q3 = summary_stats.loc['75%', feature]  # 75th percentile (Q3)
+        IQR = Q3 - Q1
+        
+        # Define lower and upper bounds for outliers
+        lower_bound_iqr = Q1 - 1.5 * IQR
+        upper_bound_iqr = Q3 + 1.5 * IQR
+        
+        # Identify outliers
+        outliers_iqr = feature_data[(feature_data < lower_bound_iqr) | (feature_data > upper_bound_iqr)]
+
+        # Plot the boxplot and highlight outliers, only if there are any outliers
+        if len(outliers_iqr) > 0:
+            print(f"Outliers detected for feature '{feature}':")
+            print(outliers_iqr)
+            
+            # Plot the boxplot and highlight outliers
+            plt.figure(figsize=(6, 4))
+            plt.boxplot(feature_data, vert=False, patch_artist=True, boxprops=dict(facecolor="lightblue"))
+            plt.scatter(outliers_iqr, [1] * len(outliers_iqr), color='red', label='Outliers (IQR)')
+            plt.title(f"Boxplot for {feature} with Outliers Highlighted")
+            plt.xlabel("Values")
+            plt.legend()
+            plt.tight_layout()
+            plt.show()
+        
+        
