@@ -69,6 +69,7 @@ if "analysis_data" not in st.session_state:
 st.title("CSC 461")
 st.write("---")
 
+#-------------------------- Main Website Section ------------------
 # Upload container
 with st.container():
     st.subheader("Choose an MP3 to Analyze")
