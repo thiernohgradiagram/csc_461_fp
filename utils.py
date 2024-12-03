@@ -3,6 +3,7 @@
 import hashlib
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def get_directory_size(path):
@@ -111,5 +112,44 @@ def detect_outliers_iqr_and_plot(data, summary_stats, label_column):
             plt.legend()
             plt.tight_layout()
             plt.show()
+
+def handle_outliers(data, summary_stats, strategy='remove', label_column=None):
+    """
+    Handles outliers in the dataset using the specified strategy.
+    
+    Parameters:
+        data (pd.DataFrame): Dataset containing features.
+        summary_stats (pd.DataFrame): Summary statistics including '25%' and '75%' for each feature.
+        strategy (str): Strategy to handle outliers ('remove', 'cap', 'transform', 'impute').
+        label_column (str): Name of the label column to exclude.
+        
+    Returns:
+        pd.DataFrame: Dataset after handling outliers.
+    """
+    # Exclude label column from processing
+    feature_columns = [col for col in data.columns if col != label_column]
+    data_processed = data.copy()
+
+    for feature in feature_columns:
+        Q1 = summary_stats.loc['25%', feature]
+        Q3 = summary_stats.loc['75%', feature]
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        
+        if strategy == 'remove':
+            data_processed = data_processed[
+                (data_processed[feature] >= lower_bound) & (data_processed[feature] <= upper_bound)
+            ]
+        elif strategy == 'cap':
+            data_processed[feature] = np.clip(data_processed[feature], lower_bound, upper_bound)
+        elif strategy == 'transform':
+            data_processed[feature] = np.log1p(data_processed[feature])
+        elif strategy == 'impute':
+            data_processed.loc[data_processed[feature] < lower_bound, feature] = data[feature].median()
+            data_processed.loc[data_processed[feature] > upper_bound, feature] = data[feature].median()
+    
+    return data_processed
+
         
         

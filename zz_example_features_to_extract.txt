@@ -1,0 +1,74 @@
+Features to Extract
+Time-Domain Features:
+
+Zero-Crossing Rate (ZCR): The rate at which the signal crosses the zero amplitude axis. Often used to detect percussive sounds.
+Root Mean Square Energy (RMS): Measures the power or energy of the audio signal.
+
+Frequency-Domain Features:
+
+Spectral Centroid: Indicates the "center of mass" of the spectrum and correlates with the brightness of a sound.
+Spectral Bandwidth: Measures the spread of frequencies in the signal.
+Spectral Rolloff: The frequency below which a certain percentage (e.g., 85%) of the spectrum's energy is concentrated.
+Spectral Contrast: The difference in amplitude between peaks and valleys in the spectrum.
+
+Cepstral Features:
+
+Mel-Frequency Cepstral Coefficients (MFCCs): Widely used in audio classification; they summarize the power spectrum of the audio signal on a mel-scale.
+Delta MFCCs: Temporal derivatives of MFCCs, capturing changes over time.
+Delta-Delta MFCCs: Second-order derivatives.
+
+Chroma Features:
+
+Chroma Vector: Represents the energy distribution of the 12 pitch classes (e.g., C, C#, D) in the music.
+Chroma CQT: Chroma features computed with constant-Q transform.
+
+/////////////////// POTENTIAL MORE FEATURES TO EXTRACT ///////////////////////////////////////////
+
+Ceptral features:
+Delta MFCCs: Temporal derivatives of MFCCs, capturing changes over time.
+Delta-Delta MFCCs: Second-order derivatives.
+
+
+Rhythmic Features:
+Tempo: Extracted using beat tracking algorithms.
+Beat Features: Derived from beat intervals and rhythmic patterns.
+
+Tonality and Pitch:
+Key: Estimated tonal center of the music.
+Harmonic-to-Noise Ratio (HNR): Measures harmonic structure.
+
+Other Features:
+Tonnetz: A representation of harmonic relations in music.
+Onset Features: Detect where notes or beats occur.
+
+
+//////////////////////////////////////////////////////////////////////////////
+1> Aggregating Features:
+
+Compute mean, variance, and higher-order statistics for each feature to create fixed-size feature vectors.
+Example:
+Mean, standard deviation, and skewness of MFCCs.
+Histogram of spectral rolloff or ZCR.
+
+2> Data Augmentation (Optional but helpful):
+
+Pitch Shifting: Slightly alter pitch to increase dataset variety.
+Time Stretching: Speed up or slow down the audio.
+Adding Noise: Introduce small amounts of noise to make the model robust.
+
+3> Feature Fusion:
+
+Combine features like MFCCs, chroma features, and tempo into a single feature vector.
+
+////////////////////////////////////////////////////////////////////////////////////////
+Handling GTZAN's Issues
+Repetitions: Filter out duplicate samples to avoid overfitting.
+Mislabelings: Perform manual verification or use a subset of genres if needed.
+Distortions: Consider preprocessing to mitigate distortions, such as noise reduction or equalization.
+Tools for Experimentation
+EDA and Visualization:
+Use spectrograms (librosa.display.specshow) to visualize frequency content.
+Compare distributions of features across genres using matplotlib or seaborn.
+Machine Learning:
+Experiment with models like SVMs, Random Forests, or Neural Networks for classification.
+Try Convolutional Neural Networks (CNNs) on spectrogram images.
