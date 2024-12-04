@@ -18,6 +18,7 @@ class MLP(nn.Module):
         
       else: #the hidden layers.
         self.nn_layers.append(nn.Linear(input_dim, hidden_dim))
+        self.nn_layers.append(nn.BatchNorm1d(hidden_dim))
       #this will connect the layers together by storing the dimension of the output from the layer for the next layer.
       input_dim = hidden_dim
       #apply the relu activation function
