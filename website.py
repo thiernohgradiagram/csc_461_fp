@@ -1,6 +1,8 @@
 import streamlit as st
 import torch
 import librosa
+import os
+import sys
 
 #HOW TO RUN
 #To run this website, all you need to do is run " streamlit run website.py " in your terminal. You must be in the same directory of the file
@@ -14,6 +16,27 @@ st.set_page_config(page_title="CSC 461", page_icon=":musical_note:", layout="wid
 #this function will perform the analysis on the selected file
 
 def run_analysis(aFile):
+
+    #add the parent directory to the current working directory so that we can access MLP class
+    #this will load the current working directory
+    repository_root_directory = os.path.dirname(os.getcwd())
+    rrd = "repository_root_directory:\t"
+    print(rrd, repository_root_directory)
+
+    if repository_root_directory not in sys.path:
+        sys.path.append(repository_root_directory)
+        print(rrd, "added to path")
+    else:  
+        print(rrd, "already in path")
+    #add the parent directory to the current working directory so that we can access MLP class
+    parent_dir = os.path.abspath(os.path.join(os.getcwd()))
+
+    if parent_dir not in sys.path:
+        sys.path.append(parent_dir)
+        print(rrd, "added to path")
+    else:  
+        print(rrd, "already in path")
+
     from mlp import MLP
     from features_extractor import FeaturesExtractor
 
@@ -23,15 +46,15 @@ def run_analysis(aFile):
     config = {
         'input_size': 30,
         'output_size': 10,
-        'hidden_layers': [256, 64],
-        'batch_size': 64,
-        'n_epochs': 20,
-        'learning_rate': 0.001,
+        'hidden_layers': [512, 256, 128, 64, 32],
+        'batch_size': 128,
+        'n_epochs': 38000,
+        'learning_rate': 0.0033
     }
 
     model = MLP(config['input_size'], config['output_size'], config['hidden_layers']).to(device)
     #load the saved state dictionary
-    model.load_state_dict(torch.load('model.pth'))
+    model.load_state_dict(torch.load('model11.pth'))
     #set the model to evaluation mode
     model.eval()
     #try processing the audio file that was found
