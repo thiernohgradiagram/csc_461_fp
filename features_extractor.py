@@ -1,4 +1,3 @@
-from concurrent.futures import ProcessPoolExecutor
 import os
 import numpy as np
 import librosa
@@ -94,54 +93,20 @@ class FeaturesExtractor:
             print(f"Error extracting features: {e}")
             return None
 
-
-
-    def process_file(self, file_info):
-        file_path, genre_label, extractor = file_info
-        try:
-            y, sr = extractor.load_audio(file_path)
-            features = extractor.extract_features_from_file(y, sr)
-            if features is not None:
-                return np.hstack([features, genre_label])
-            else:
-                print(f"Failed to extract features for {file_path}")
-                return None
-        except Exception as e:
-            print(f"Error processing {file_path}: {e}")
-            return None
-
-
-    def extract_features_all_files(self, dataset_path):
-        genre_dict = {
-            'blues': 0, 'classical': 1, 'country': 2, 'disco': 3,
-            'hiphop': 4, 'jazz': 5, 'metal': 6, 'pop': 7, 'reggae': 8, 'rock': 9
-        }
-
-        # Gather all files with genre labels
-        file_info_list = []
-        for genre, label in genre_dict.items():
-            genre_path = os.path.join(dataset_path, genre)
-            if not os.path.isdir(genre_path):
-                continue
-
-            files = [os.path.join(genre_path, f) for f in os.listdir(genre_path) if f.endswith(".wav")]
-            file_info_list.extend([(f, label, self) for f in files])
-
-        # Calculate available CPUs minus 1
-        available_cpus = os.cpu_count() or 1  # Fallback to 1 if os.cpu_count() returns None
-        max_workers = max(1, available_cpus - 1)  # Ensure at least 1 worker is used
+    def extract_features_all_files(self, directory):
+        """
+        Extract features from all audio files in a directory.
+        """
+        features = []
+        for genre in os.listdir(directory):
+            genre_dir = os.path.join(directory, genre)
+            for file_name in os.listdir(genre_dir):
+                file_path = os.path.join(genre_dir, file_name)
+                y, sr = self.load_audio(file_path)
+                features.append(self.extract_features_from_file(y, sr))
+                
+        return np.array(features)
         
-        print(f"Using {max_workers} CPUs for parallel processing.")
-
-        # Process files in parallel
-        with ProcessPoolExecutor(max_workers=max_workers) as executor:
-            results = list(executor.map(self.process_file, file_info_list))
-
-        # Filter out None results and convert to numpy array
-        data = np.array([r for r in results if r is not None])
-
-        print(f"Feature extraction completed: {len(data)} files processed.")
-        return data
     
     def getColumnNames(self):
         column_names = [
