@@ -72,3 +72,56 @@ Compare distributions of features across genres using matplotlib or seaborn.
 Machine Learning:
 Experiment with models like SVMs, Random Forests, or Neural Networks for classification.
 Try Convolutional Neural Networks (CNNs) on spectrogram images.
+
+
+///////////////////////////////
+# # Time-Domain Features
+            # rms = np.mean(librosa.feature.rms(y=y))
+            # zcr = np.mean(librosa.feature.zero_crossing_rate(y))
+
+            # # Frequency-Domain Features
+            # spectral_centroid = np.mean(librosa.feature.spectral_centroid(y=y, sr=sr))
+            # spectral_bandwidth = np.mean(librosa.feature.spectral_bandwidth(y=y, sr=sr))
+            # spectral_rolloff = np.mean(librosa.feature.spectral_rolloff(y=y, sr=sr))
+            # spectral_contrast = np.mean(librosa.feature.spectral_contrast(y=y, sr=sr, n_bands=6), axis=1)
+            # spectral_flatness = np.mean(librosa.feature.spectral_flatness(y=y))
+
+            # # Harmonic and Percussive Energy
+            # harmonic = librosa.effects.harmonic(y)
+            # percussive = librosa.effects.percussive(y)
+            # harmonic_energy = np.mean(harmonic**2)
+            # percussive_energy = np.mean(percussive**2)
+
+            # # Spectral Skewness
+            # spectral_centroid_skewness = scipy.stats.skew(librosa.feature.spectral_centroid(y=y, sr=sr).flatten())
+
+            # # RMS of Harmonics
+            # rms_harmonic = np.mean(librosa.feature.rms(y=harmonic))
+
+            # # Silence Ratio
+            # silence_ratio = np.sum(librosa.feature.rms(y=y) < 0.01) / len(y)
+
+            # # Cepstral Features
+            # mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+            # mfccs_mean = np.mean(mfccs, axis=1)
+            # delta_mfccs = np.mean(librosa.feature.delta(mfccs), axis=1)
+            # delta2_mfccs = np.mean(librosa.feature.delta(mfccs, order=2), axis=1)
+
+            # # Chroma Features
+            # chroma = librosa.feature.chroma_stft(y=y, sr=sr)
+            # chroma_mean = np.mean(chroma, axis=1)
+
+            # # Tempo Features
+            # tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
+
+            # # Tonnetz Features
+            # tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(y), sr=sr), axis=1)
+
+            # Mel Spectrogram Features
+            #mel_spec = librosa.feature.melspectrogram(y=y, sr=sr)
+            #mel_spec_mean = np.mean(mel_spec, axis=1)
+
+            # # Energy Band Ratios
+            # energy_low = np.mean(mel_spec[:40])   # First 40 Mel bands
+            # energy_mid = np.mean(mel_spec[40:80])  # Mid 40 Mel bands
+            # energy_high = np.mean(mel_spec[80:])  # Last 40 Mel bands

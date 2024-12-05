@@ -22,54 +22,6 @@ class FeaturesExtractor:
         """
         return librosa.load(file_path, sr=None)
 
-
-    # def extract_features_from_file(self, y, sr):
-    #     """
-    #     Extract features from an audio signal.
-    #     """
-    #     try:
-    #         # Time-Domain Features
-    #         rms = np.mean(librosa.feature.rms(y=y))
-    #         zcr = np.mean(librosa.feature.zero_crossing_rate(y))
-
-    #         # Frequency-Domain Features
-    #         spectral_centroid = np.mean(librosa.feature.spectral_centroid(y=y, sr=sr))
-    #         spectral_bandwidth = np.mean(librosa.feature.spectral_bandwidth(y=y, sr=sr))
-    #         spectral_rolloff = np.mean(librosa.feature.spectral_rolloff(y=y, sr=sr))
-    #         spectral_contrast = np.mean(librosa.feature.spectral_contrast(y=y, sr=sr, n_bands=6), axis=1)
-    #         spectral_flatness = np.mean(librosa.feature.spectral_flatness(y=y))
-
-    #         # Cepstral Features
-    #         mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
-    #         mfccs_mean = np.mean(mfccs, axis=1)
-    #         delta_mfccs = np.mean(librosa.feature.delta(mfccs), axis=1)
-    #         delta2_mfccs = np.mean(librosa.feature.delta(mfccs, order=2), axis=1)
-
-    #         # Chroma Features
-    #         chroma = librosa.feature.chroma_stft(y=y, sr=sr)
-    #         chroma_mean = np.mean(chroma, axis=1)
-
-    #         # Tempo Features
-    #         tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
-
-    #         # Tonnetz Features
-    #         tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(y), sr=sr), axis=1)
-
-    #         # Mel Spectrogram Features
-    #         mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
-    #         mel_spec_mean = np.mean(mel_spec, axis=1)
-
-    #         # Combine all features into a single vector
-    #         features = np.hstack([
-    #             rms, zcr, spectral_centroid, spectral_bandwidth, spectral_rolloff,
-    #             spectral_contrast, spectral_flatness, mfccs_mean, delta_mfccs, delta2_mfccs,
-    #             chroma_mean, tempo, tonnetz, mel_spec_mean
-    #         ])
-    #         return features
-    #     except Exception as e:
-    #         print(f"Error extracting features: {e}")
-    #         return None
-
     def extract_features_from_file(self, y, sr):
         """
         Extract features from an audio signal.
@@ -85,7 +37,6 @@ class FeaturesExtractor:
             spectral_rolloff = np.mean(librosa.feature.spectral_rolloff(y=y, sr=sr))
             spectral_contrast = np.mean(librosa.feature.spectral_contrast(y=y, sr=sr, n_bands=6), axis=1)
             spectral_flatness = np.mean(librosa.feature.spectral_flatness(y=y))
-
 
             # Harmonic and Percussive Energy
             harmonic = librosa.effects.harmonic(y)
@@ -176,8 +127,14 @@ class FeaturesExtractor:
             files = [os.path.join(genre_path, f) for f in os.listdir(genre_path) if f.endswith(".wav")]
             file_info_list.extend([(f, label, self) for f in files])
 
+        # Calculate available CPUs minus 1
+        available_cpus = os.cpu_count() or 1  # Fallback to 1 if os.cpu_count() returns None
+        max_workers = max(1, available_cpus - 1)  # Ensure at least 1 worker is used
+        
+        print(f"Using {max_workers} CPUs for parallel processing.")
+
         # Process files in parallel
-        with ProcessPoolExecutor() as executor:
+        with ProcessPoolExecutor(max_workers=max_workers) as executor:
             results = list(executor.map(self.process_file, file_info_list))
 
         # Filter out None results and convert to numpy array
