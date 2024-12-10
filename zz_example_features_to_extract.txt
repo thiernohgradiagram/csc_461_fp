@@ -1,0 +1,127 @@
+Features to Extract
+Time-Domain Features:
+
+Zero-Crossing Rate (ZCR): The rate at which the signal crosses the zero amplitude axis. Often used to detect percussive sounds.
+Root Mean Square Energy (RMS): Measures the power or energy of the audio signal.
+
+Frequency-Domain Features:
+
+Spectral Centroid: Indicates the "center of mass" of the spectrum and correlates with the brightness of a sound.
+Spectral Bandwidth: Measures the spread of frequencies in the signal.
+Spectral Rolloff: The frequency below which a certain percentage (e.g., 85%) of the spectrum's energy is concentrated.
+Spectral Contrast: The difference in amplitude between peaks and valleys in the spectrum.
+
+Cepstral Features:
+
+Mel-Frequency Cepstral Coefficients (MFCCs): Widely used in audio classification; they summarize the power spectrum of the audio signal on a mel-scale.
+Delta MFCCs: Temporal derivatives of MFCCs, capturing changes over time.
+Delta-Delta MFCCs: Second-order derivatives.
+
+Chroma Features:
+
+Chroma Vector: Represents the energy distribution of the 12 pitch classes (e.g., C, C#, D) in the music.
+Chroma CQT: Chroma features computed with constant-Q transform.
+
+/////////////////// POTENTIAL MORE FEATURES TO EXTRACT ///////////////////////////////////////////
+
+Ceptral features:
+Delta MFCCs: Temporal derivatives of MFCCs, capturing changes over time.
+Delta-Delta MFCCs: Second-order derivatives.
+
+
+Rhythmic Features:
+Tempo: Extracted using beat tracking algorithms.
+Beat Features: Derived from beat intervals and rhythmic patterns.
+
+Tonality and Pitch:
+Key: Estimated tonal center of the music.
+Harmonic-to-Noise Ratio (HNR): Measures harmonic structure.
+
+Other Features:
+Tonnetz: A representation of harmonic relations in music.
+Onset Features: Detect where notes or beats occur.
+
+
+//////////////////////////////////////////////////////////////////////////////
+1> Aggregating Features:
+
+Compute mean, variance, and higher-order statistics for each feature to create fixed-size feature vectors.
+Example:
+Mean, standard deviation, and skewness of MFCCs.
+Histogram of spectral rolloff or ZCR.
+
+2> Data Augmentation (Optional but helpful):
+
+Pitch Shifting: Slightly alter pitch to increase dataset variety.
+Time Stretching: Speed up or slow down the audio.
+Adding Noise: Introduce small amounts of noise to make the model robust.
+
+3> Feature Fusion:
+
+Combine features like MFCCs, chroma features, and tempo into a single feature vector.
+
+////////////////////////////////////////////////////////////////////////////////////////
+Handling GTZAN's Issues
+Repetitions: Filter out duplicate samples to avoid overfitting.
+Mislabelings: Perform manual verification or use a subset of genres if needed.
+Distortions: Consider preprocessing to mitigate distortions, such as noise reduction or equalization.
+Tools for Experimentation
+EDA and Visualization:
+Use spectrograms (librosa.display.specshow) to visualize frequency content.
+Compare distributions of features across genres using matplotlib or seaborn.
+Machine Learning:
+Experiment with models like SVMs, Random Forests, or Neural Networks for classification.
+Try Convolutional Neural Networks (CNNs) on spectrogram images.
+
+
+///////////////////////////////
+# # Time-Domain Features
+            # rms = np.mean(librosa.feature.rms(y=y))
+            # zcr = np.mean(librosa.feature.zero_crossing_rate(y))
+
+            # # Frequency-Domain Features
+            # spectral_centroid = np.mean(librosa.feature.spectral_centroid(y=y, sr=sr))
+            # spectral_bandwidth = np.mean(librosa.feature.spectral_bandwidth(y=y, sr=sr))
+            # spectral_rolloff = np.mean(librosa.feature.spectral_rolloff(y=y, sr=sr))
+            # spectral_contrast = np.mean(librosa.feature.spectral_contrast(y=y, sr=sr, n_bands=6), axis=1)
+            # spectral_flatness = np.mean(librosa.feature.spectral_flatness(y=y))
+
+            # # Harmonic and Percussive Energy
+            # harmonic = librosa.effects.harmonic(y)
+            # percussive = librosa.effects.percussive(y)
+            # harmonic_energy = np.mean(harmonic**2)
+            # percussive_energy = np.mean(percussive**2)
+
+            # # Spectral Skewness
+            # spectral_centroid_skewness = scipy.stats.skew(librosa.feature.spectral_centroid(y=y, sr=sr).flatten())
+
+            # # RMS of Harmonics
+            # rms_harmonic = np.mean(librosa.feature.rms(y=harmonic))
+
+            # # Silence Ratio
+            # silence_ratio = np.sum(librosa.feature.rms(y=y) < 0.01) / len(y)
+
+            # # Cepstral Features
+            # mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+            # mfccs_mean = np.mean(mfccs, axis=1)
+            # delta_mfccs = np.mean(librosa.feature.delta(mfccs), axis=1)
+            # delta2_mfccs = np.mean(librosa.feature.delta(mfccs, order=2), axis=1)
+
+            # # Chroma Features
+            # chroma = librosa.feature.chroma_stft(y=y, sr=sr)
+            # chroma_mean = np.mean(chroma, axis=1)
+
+            # # Tempo Features
+            # tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
+
+            # # Tonnetz Features
+            # tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(y), sr=sr), axis=1)
+
+            # Mel Spectrogram Features
+            #mel_spec = librosa.feature.melspectrogram(y=y, sr=sr)
+            #mel_spec_mean = np.mean(mel_spec, axis=1)
+
+            # # Energy Band Ratios
+            # energy_low = np.mean(mel_spec[:40])   # First 40 Mel bands
+            # energy_mid = np.mean(mel_spec[40:80])  # Mid 40 Mel bands
+            # energy_high = np.mean(mel_spec[80:])  # Last 40 Mel bands
