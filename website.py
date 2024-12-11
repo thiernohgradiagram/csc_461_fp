@@ -100,6 +100,29 @@ def process_file(aFile):
     return user_file_data
     #features = torch.tensor(user_file_data, dtype=torch.float32)#make the data a tensor.
 
+def process_file_cnn(aFile):
+    from features_extractor_cnn import FeaturesExtractor
+    from sklearn.decomposition import PCA
+    from sklearn.preprocessing import StandardScaler
+    import pandas as pd
+    import numpy as np
+
+
+    #try processing the audio file that was found
+    try:
+        y, sr = librosa.load(aFile, sr=22050)
+        y = librosa.util.normalize(y)
+        y, _ = librosa.effects.trim(y)
+    
+    except Exception as e:
+        print(f"Error preprocessing file: {e}")
+
+    target_shape = (150, 150)
+    chunk_duration = 4
+    overlap_duration = 2
+    feature_extractor = FeaturesExtractor(target_shape, chunk_duration, overlap_duration)
+    user_file_data, user_file_labels = feature_extractor.extract_features_from_file(aFile, y)
+    return user_file_data, user_file_labels
 
 
 
@@ -223,15 +246,25 @@ def run_analysis_KNN(aFile):
     genre_mapping = {0: 'blues', 1: 'Classical', 2: 'Country', 3: 'disco', 4: 'hiphop', 5: 'jazz', 6: 'metal', 7: 'pop', 8: 'reggae', 9: 'rock'}
     return genre_mapping[predicted_class[0]]
 
+
 def run_analysis_CNN(aFile):
+    import tensorflow as tf
+    import numpy as np
+    #load the model
+    model = tf.keras.models.load_model('Trained_model.h5')
 
-    #since the model used a pca reduced dataset, reduce the input file in the same way
-    user_file_data = process_file(aFile)
-
-    print("predicted_class is: ", predicted_class[0])
+    #process the data
+    user_file_data, user_file_label = process_file_cnn(aFile)
+    #convert the data to an numpy array and transpose to the correct shape
+    user_file_data_np =np.array(user_file_data)
+    #user_file_data_np = np.reshape(user_file_data_np, (user_file_data_np.shape[0], 1, 150, 150))
+    #run the data throught the model
+    predictions = model.predict(user_file_data_np)
+    predicted_class = np.argmax(predictions, axis=1)
+    
     genre_mapping = {0: 'blues', 1: 'Classical', 2: 'Country', 3: 'disco', 4: 'hiphop', 5: 'jazz', 6: 'metal', 7: 'pop', 8: 'reggae', 9: 'rock'}
     return genre_mapping[predicted_class[0]]
-
+    
 
 
 #--------------------- Session state Setup -----------------------
@@ -283,8 +316,6 @@ with st.container():
         if (chosen_ai_model == "MLP"):
             st.session_state["accuracy_value"] = "72%"
             analyzed_file = run_analysis_MLP(uploaded_file.name)
-        elif (chosen_ai_model == "CNN"):
-            analyzed_file = run_analysis_CNN(uploaded_file.name)
         elif (chosen_ai_model == "KNN"):
             analyzed_file = run_analysis_KNN(uploaded_file.name)
             st.session_state["accuracy_value"] = "52%"
@@ -294,6 +325,9 @@ with st.container():
         elif (chosen_ai_model == "NN"):
             analyzed_file = run_analysis_NN(uploaded_file.name)
             st.session_state["accuracy_value"] = "65%"
+        elif (chosen_ai_model == "CNN"):
+            analyzed_file = run_analysis_CNN(uploaded_file.name)
+            st.session_state["accuracy_value"] = "90%"
         
         #save the analysis to the analyzed file variable
         st.session_state["analysis_data"] = analyzed_file
