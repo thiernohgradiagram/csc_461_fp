@@ -186,65 +186,6 @@ if uploaded_file is not None:
 
 ###############################################################################################
 
-# # --- Recording Section ---
-# st.subheader("Record an Audio Clip")
-# st.write("Press the button below to start and stop the recording.")
-
-# audio_data = st_audiorec()
-
-# if audio_data is not None:
-#     # audio_data is WAV file data in bytes
-#     temp_rec_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
-#     with open(temp_rec_file.name, "wb") as f:
-#         f.write(audio_data)
-
-#     recorded_file_path = temp_rec_file.name
-
-#     # Display recorded audio
-#     st.audio(recorded_file_path, format='audio/wav')
-
-#     # Load and process recorded audio
-#     y_rec, sr_rec = librosa.load(recorded_file_path, sr=None)
-#     fig_wave_rec, ax_wave_rec = plt.subplots(figsize=(10,3))
-#     librosa.display.waveshow(y_rec, sr=sr_rec, ax=ax_wave_rec)
-#     ax_wave_rec.set_title("Waveform of Recorded Audio")
-#     st.pyplot(fig_wave_rec)
-
-#     # Plot mel-spectrogram for recorded audio
-#     fig_mel_spec_rec = plot_melspectrogram(y_rec, sr_rec)
-#     st.pyplot(fig_mel_spec_rec)
-
-#     # Extract features and predict
-#     data_rec, _ = feature_extractor.extract_features_from_file(recorded_file_path, label=0)
-
-#     if len(data_rec) == 0:
-#         st.write("No valid audio chunks were extracted from the recording.")
-#     else:
-#         data_rec_np = np.stack([chunk.numpy() for chunk in data_rec], axis=0)
-#         predicted_class_idx_rec, avg_prediction_rec = predict_genre(data_rec_np)
-#         predicted_genre_rec = CLASS_LABELS[predicted_class_idx_rec]
-
-#         st.write("**Predicted Genre (Recorded Audio):**", predicted_genre_rec)
-
-#         # Display prediction confidence for recorded audio
-#         st.write("Prediction Confidence:")
-#         for i, (genre, conf) in enumerate(zip(CLASS_LABELS, avg_prediction_rec)):
-#             st.write(f"{genre}: {conf*100:.2f}%")
-
-#     if os.path.exists(recorded_file_path):
-#         os.remove(recorded_file_path)
-
-
-# # About the Model
-# st.write("## About the Model")
-# st.write("""
-# This model was trained on the GTZAN dataset, which consists of 10 genres:
-# Blues, Classical, Country, Disco, Hiphop, Jazz, Metal, Pop, Reggae, Rock.
-
-# The model is a CNN trained on Mel spectrogram representations of audio clips.
-# It can classify short audio segments into one of these 10 genres.
-# """)
-
 # --- Recording Section ---
 st.subheader("Record an Audio Clip")
 st.write("Press the button below to start and stop the recording.")
