@@ -99,5 +99,9 @@ class DataPreprocessorParallelProc:
                         file_info_list.append((file_path, genre, file, output_path, sample_rate))
 
         # Process files in parallel
-        with ProcessPoolExecutor() as executor:
+        available_cpus = os.cpu_count() or 1
+        max_workers = max(1, available_cpus - 1)  # Use at least 1 worker
+        print(f"Using {max_workers} CPUs for parallel processing.")
+
+        with ProcessPoolExecutor(max_workers=max_workers ) as executor:
             executor.map(self._process_single_file, file_info_list)
