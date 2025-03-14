@@ -1,5 +1,6 @@
 # csc_461_fp
-This repo is dedicated for our csc 461 final project / Fall 2024 / University Of Rhode Island
+This repo is dedicated for our csc 461 final project / Fall 2024 / University Of Rhode Island. The result of the experiments are in the Final Report_.pdf file
+[text](<Final Report_.pdf>)
 
 ## Setup
 - clone this repository: git clone https://github.com/thiernohgradiagram/csc_461_fp.git
@@ -25,3 +26,7 @@ This repo is dedicated for our csc 461 final project / Fall 2024 / University Of
 - ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 - ls -al /home/zeus/.ssh
 - eval "$(ssh-agent -s)"
+
+
+
+
